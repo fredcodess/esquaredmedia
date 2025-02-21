@@ -40,6 +40,7 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-instagram": "^1.0.0",
     "pdfkit": "^0.16.0",
+    "react-calendar": "^5.1.0",
     "react-dropzone": "^14.3.5",
     "stripe": "^17.6.0"
   }
