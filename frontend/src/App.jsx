@@ -21,7 +21,6 @@ function App() {
   // }
   return (
     <Box minH={"100vh"} bg={useColorModeValue("#ffffff", "black ")}>
-      <Navbar />
       <AppRoutes user={user} />
       <Footer />
     </Box>

@@ -9,6 +9,7 @@ import stripeRoute from "./config/stripe.js";
 import customerRoutes from "./routes/customer.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import disabledDatesRoutes from "./routes/disabledDates.route.js";
+import bookingDaysRoutes from "./routes/bookingDays.route.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(
 app.use("/api/customer/", customerRoutes);
 app.use("/api/disabledDates/", disabledDatesRoutes);
 app.use("/api/admin/", adminRoutes);
+app.use("/api/opening/", bookingDaysRoutes);
 app.use("/api/customer/", stripeRoute);
 
 if (process.env.NODE_ENV === "production") {

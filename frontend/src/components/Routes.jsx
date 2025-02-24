@@ -14,7 +14,11 @@ import ManageBooking from "../admin/ManageBooking";
 import Analytics from "../admin/Analytics";
 import BookingSystem from "../pages/BookingSystem";
 import Availability from "../admin/Availability";
+import SelectTime from "../components/SelectTime";
 import { useColorModeValue } from "@chakra-ui/react";
+import Services from "../components/Services";
+import Checkout from "../components/Checkout";
+import PaymentSuccess from "../components/PaymentSuccess";
 
 const AppRoutes = ({ user }) => {
   const textColor = useColorModeValue("black", "white");
@@ -27,6 +31,10 @@ const AppRoutes = ({ user }) => {
       <Route path="/contact" element={<Contact bg={bg} />} />
       <Route path="/login" element={<Login bg={bg} />} />
       <Route path="/register" element={<Register bg={bg} />} />
+      <Route path="/select-time" element={<SelectTime bg={bg} />} />
+      <Route path="/services" element={<Services bg={bg} />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/success" element={<PaymentSuccess />} />
 
       <Route
         path="/toolkit"
