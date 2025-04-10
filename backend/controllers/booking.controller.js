@@ -39,14 +39,14 @@ export const sendEmailResponsee = async (req, res, next) => {
       customerName: booking.fullname,
       email: booking.email,
       date: new Date().toLocaleDateString(),
-      items: [
-        {
-          service_type: booking.service_type,
-          event_type: booking.event_type,
-          quantity: 1,
-        },
-      ],
-      deposit: booking.total || 100,
+
+      service_type: booking.service_type,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      selectedDate: booking.selectedDate,
+      selectedDay: booking.selectedDay,
+
+      deposit: booking.price || 100,
     };
 
     const invoicePath = await generateInvoice(invoiceData);

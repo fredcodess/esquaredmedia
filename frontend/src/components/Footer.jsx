@@ -24,7 +24,6 @@ const Footer = ({ bg }) => {
           </Box>
         </Box>
 
-        {/* Sitemap Section */}
         <Box>
           <Text fontSize="xl" fontWeight="semibold" mb={4}>
             Sitemap
@@ -45,7 +44,6 @@ const Footer = ({ bg }) => {
           </Stack>
         </Box>
 
-        {/* Social Media Section */}
         <Box>
           <Text fontSize="xl" fontWeight="semibold" mb={4}>
             Connect with us

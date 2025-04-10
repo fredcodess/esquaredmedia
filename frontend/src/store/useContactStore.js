@@ -6,7 +6,6 @@ const useContactStore = create((set) => ({
   loading: false, // Loading state
   error: null, // Error state
 
-  // Fetch all contacts
   fetchContacts: async () => {
     set({ loading: true, error: null });
     try {

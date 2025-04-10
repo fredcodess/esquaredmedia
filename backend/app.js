@@ -5,16 +5,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import connectToMongoDB from "./config/database.js";
 import stripeRoute from "./config/stripe.js";
+import passport from "./config/passport.js";
 
 import customerRoutes from "./routes/customer.route.js";
 import adminRoutes from "./routes/admin.route.js";
-import disabledDatesRoutes from "./routes/disabledDates.route.js";
 import bookingDaysRoutes from "./routes/bookingDays.route.js";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5002;
 
 const __dirname = path.resolve();
 
@@ -27,8 +27,9 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+
 app.use("/api/customer/", customerRoutes);
-app.use("/api/disabledDates/", disabledDatesRoutes);
 app.use("/api/admin/", adminRoutes);
 app.use("/api/opening/", bookingDaysRoutes);
 app.use("/api/customer/", stripeRoute);

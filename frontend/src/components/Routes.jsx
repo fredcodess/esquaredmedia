@@ -21,7 +21,6 @@ import Checkout from "../components/Checkout";
 import PaymentSuccess from "../components/PaymentSuccess";
 
 const AppRoutes = ({ user }) => {
-  const textColor = useColorModeValue("black", "white");
   const bg = useColorModeValue("white", "black");
   return (
     <Routes>
@@ -31,11 +30,6 @@ const AppRoutes = ({ user }) => {
       <Route path="/contact" element={<Contact bg={bg} />} />
       <Route path="/login" element={<Login bg={bg} />} />
       <Route path="/register" element={<Register bg={bg} />} />
-      <Route path="/select-time" element={<SelectTime bg={bg} />} />
-      <Route path="/services" element={<Services bg={bg} />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/success" element={<PaymentSuccess />} />
-
       <Route
         path="/toolkit"
         element={
@@ -44,7 +38,6 @@ const AppRoutes = ({ user }) => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/booking"
         element={
@@ -53,7 +46,38 @@ const AppRoutes = ({ user }) => {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/services"
+        element={
+          <ProtectedRoute user={user}>
+            <Services bg={bg} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute user={user}>
+            <Checkout bg={bg} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/select-time"
+        element={
+          <ProtectedRoute user={user}>
+            <SelectTime bg={bg} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/success"
+        element={
+          <ProtectedRoute user={user}>
+            <PaymentSuccess bg={bg} />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/manage-bookings"
         element={

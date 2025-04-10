@@ -26,3 +26,7 @@ uploads
 *.sw?
 
 .env
+
+uploads
+
+invoices

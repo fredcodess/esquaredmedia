@@ -1,7 +1,20 @@
 import Contact from "../models/contact.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import BookingCount from "../models/bookingCount.model.js";
+import VisitorCount from "../models/VisitorCount.model.js";
 dotenv.config();
+
+export const getAnalyticsData = async (req, res) => {
+  try {
+    const bookingCounts = await BookingCount.getCounts();
+    const visitorCounts = await VisitorCount.getCounts();
+    res.json({ bookingCounts, visitorCounts });
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 export const getContact = async (req, res, next) => {
   try {
@@ -40,7 +53,6 @@ export const sendEmailResponse = async (req, res, next) => {
       },
     });
 
-    // Mail options
     const mailOptions = {
       from: `E-Squared <${adminEmail}>`,
       to: contact.email,
@@ -48,7 +60,6 @@ export const sendEmailResponse = async (req, res, next) => {
       text: response,
     };
 
-    // Send the email
     await transporter.sendMail(mailOptions, async (error) => {
       if (error) {
         return next(error);

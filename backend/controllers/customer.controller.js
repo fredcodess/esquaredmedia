@@ -5,8 +5,10 @@ import Booking from "../models/booking.model.js";
 import removeBackground from "@imgly/background-removal-node";
 import jwt from "jsonwebtoken";
 import fs from "fs";
+import VisitorCount from "../models/VisitorCount.model.js";
+import BookingCount from "../models/bookingCount.model.js";
 
-const generateTokens = (userId) => {
+export const generateTokens = (userId) => {
   const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "15m",
   });
@@ -18,7 +20,7 @@ const generateTokens = (userId) => {
   return { accessToken, refreshToken };
 };
 
-const storeRefreshToken = async (userId, refreshToken) => {
+export const storeRefreshToken = async (userId, refreshToken) => {
   await redis.set(
     `refresh_token:${userId}`,
     refreshToken,
@@ -27,7 +29,7 @@ const storeRefreshToken = async (userId, refreshToken) => {
   ); // 7days
 };
 
-const setCookies = (res, accessToken, refreshToken) => {
+export const setCookies = (res, accessToken, refreshToken) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -42,6 +44,21 @@ const setCookies = (res, accessToken, refreshToken) => {
   });
 };
 
+export const getVisitorCount = async (req, res) => {
+  try {
+    const currentDay = new Date()
+      .toLocaleString("en-us", { weekday: "long" })
+      .toLowerCase();
+
+    await VisitorCount.incrementCount(currentDay);
+
+    res.status(200).send("Visitor count updated successfully.");
+  } catch (err) {
+    console.error("Error updating visitor count:", err);
+    res.status(500).send("Error updating visitor count.");
+  }
+};
+
 export const registerUser = async (req, res) => {
   const user = req.body;
   try {
@@ -52,7 +69,6 @@ export const registerUser = async (req, res) => {
     }
     await User.create(user);
 
-    // authenticate
     const { accessToken, refreshToken } = generateTokens(user._id);
     await storeRefreshToken(user._id, refreshToken);
 
@@ -196,6 +212,11 @@ export const booking = async (req, res) => {
   try {
     const booking = req.body;
     const newBooking = await Booking.create(booking);
+    const currentDay = new Date()
+      .toLocaleString("en-us", { weekday: "long" })
+      .toLowerCase();
+
+    await BookingCount.incrementCount(currentDay);
     res.status(201).json(newBooking);
   } catch (error) {
     console.log("Error in booking controller", error.message);

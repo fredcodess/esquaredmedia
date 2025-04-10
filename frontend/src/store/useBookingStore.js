@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../config/axios";
-import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
+import { toast } from "react-toastify";
 
 const useBookingStore = create((set) => ({
   bookings: [], // Store all bookings
@@ -14,9 +14,8 @@ const useBookingStore = create((set) => ({
     try {
       const res = await axiosInstance.post("/customer/booking", data);
       toast.success("Booking created successfully!");
-      // You could update `bookings` if you want the newly created booking immediately available
       set((state) => ({
-        bookings: [...state.bookings, res.data], // Assuming res.data is the new booking
+        bookings: [...state.bookings, res.data],
         isBooking: false,
       }));
     } catch (error) {
@@ -26,7 +25,6 @@ const useBookingStore = create((set) => ({
     }
   },
 
-  // Fetch all bookings
   fetchBookings: async () => {
     set({ loading: true, error: null });
     try {
@@ -57,7 +55,6 @@ const useBookingStore = create((set) => ({
     }
   },
 
-  // Delete a booking
   deleteBooking: async (id) => {
     set({ loading: true, error: null });
     try {
@@ -77,7 +74,7 @@ const useBookingStore = create((set) => ({
   handleCheckout: async (deposit, email) => {
     try {
       const response = await fetch(
-        "http://localhost:5001/api/customer/create-checkout-session",
+        "http://localhost:5002/api/customer/create-checkout-session",
         {
           method: "POST",
           headers: {

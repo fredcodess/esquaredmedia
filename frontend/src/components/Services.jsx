@@ -9,66 +9,73 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Card,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 const servicePlans = {
   Weddings: [
     {
-      name: "Bronze Package",
+      name: "Weddings Bronze Package",
       coverage: 50,
       bgColor: "orange.100",
       progressColor: "orange.400",
-      premium: "LOWEST",
-      outOfPocket: "HIGHEST",
-      price: 500,
+      hit: "Pictures Only - £400",
+      hitt: "Pictures & Video - £750",
+      premium: "20 pictures with video",
+      price: 300,
     },
     {
-      name: "Silver Package",
+      name: "Weddings Silver Package",
       coverage: 70,
       bgColor: "gray.200",
       progressColor: "gray.500",
-      premium: "LOWER",
-      outOfPocket: "MODERATE",
-      price: 1000,
+      hit: "Pictures Only - £600",
+      hitt: "Pictures & Video - £1000",
+      premium: "35 pictures with video",
+      price: 400,
     },
     {
-      name: "Gold Package",
+      name: "Weddings Gold Package",
       coverage: 90,
       bgColor: "yellow.100",
       progressColor: "yellow.400",
-      premium: "HIGHER",
-      outOfPocket: "LOWER",
-      price: 2000,
+      hit: "Pictures Only - £1000",
+      hitt: "Pictures & Video - £2500",
+      premium: "50 pictures with video",
+      price: 1000,
     },
   ],
   Photoshoots: [
     {
-      name: "Bronze Package",
+      name: "Photoshoots Bronze Package",
       coverage: 50,
       bgColor: "orange.100",
       progressColor: "orange.400",
-      premium: "LOWEST",
-      outOfPocket: "HIGHEST",
-      price: 500,
+      hit: "Home photoshoot",
+      hitt: "10 edited pictures",
+      premium: "Optional outfit change (£250 - 300)",
+      price: 120,
     },
     {
-      name: "Silver Package",
+      name: "Photoshoots Silver Package",
       coverage: 70,
       bgColor: "gray.200",
       progressColor: "gray.500",
-      premium: "LOWER",
-      outOfPocket: "MODERATE",
-      price: 1000,
+      hit: "Outside/Studio photoshoot",
+      hitt: "20 edited pictures",
+      premium: "Optional outfit change (£300 - 400)",
+      price: 160,
     },
     {
-      name: "Gold Package",
+      name: "Photoshoots Gold Package",
       coverage: 90,
       bgColor: "yellow.100",
       progressColor: "yellow.400",
-      premium: "HIGHER",
-      outOfPocket: "LOWER",
-      price: 2000,
+      hit: "Studio photoshoot",
+      hitt: "30 edited pictures",
+      premium: "Optional outfit change (£400 - 450)",
+      price: 180,
     },
   ],
   Engagements: [
@@ -77,27 +84,30 @@ const servicePlans = {
       coverage: 50,
       bgColor: "orange.100",
       progressColor: "orange.400",
-      premium: "LOWEST",
-      outOfPocket: "HIGHEST",
-      price: 500,
+      hit: "Pictures Only - £400",
+      hitt: "Pictures & Video - £750",
+      premium: "20 pictures with video",
+      price: 300,
     },
     {
       name: "Engagements Silver Package",
       coverage: 70,
       bgColor: "gray.200",
       progressColor: "gray.500",
-      premium: "LOWER",
-      outOfPocket: "MODERATE",
-      price: 1000,
+      hit: "Pictures Only - £600",
+      hitt: "Pictures & Video - £1000",
+      premium: "35 pictures with video",
+      price: 400,
     },
     {
       name: "Engagements Gold Package",
       coverage: 90,
       bgColor: "yellow.100",
       progressColor: "yellow.400",
-      premium: "HIGHER",
-      outOfPocket: "LOWER",
-      price: 2000,
+      hit: "Pictures Only - £1000",
+      hitt: "Pictures & Video - £2500",
+      premium: "50 pictures with video",
+      price: 1000,
     },
   ],
 };
@@ -107,8 +117,10 @@ const Services = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const navigate = useNavigate();
 
+  const textColor = useColorModeValue("black", "black");
+
   return (
-    <Box p={6}>
+    <Box p={24}>
       <Flex justify="space-between" align="center" mb={6}>
         <Heading fontSize="lg">Select a service</Heading>
         <Select
@@ -143,6 +155,7 @@ const Services = () => {
               }}
               transition="all 0.3s"
               _hover={{ boxShadow: "lg", transform: "scale(1.05)" }}
+              color={textColor}
             >
               <Heading size="md" mb={4} textAlign="center">
                 {plan.name}
@@ -159,11 +172,12 @@ const Services = () => {
                 </CircularProgress>
               </Flex>
               <Text fontSize="sm" textAlign="center">
-                <strong>Premiums:</strong> {plan.premium} <br />
-                <strong>Out-of-Pocket:</strong> {plan.outOfPocket}
+                {plan.hit} <br />
+                {plan.hitt} <br />
+                {plan.premium}
               </Text>
               <Text fontSize="sm" mt={3} textAlign="center">
-                Price: ${plan.price}
+                Deposite: ${plan.price}
               </Text>
             </Card>
           ))}

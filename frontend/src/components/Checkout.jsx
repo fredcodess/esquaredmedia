@@ -12,6 +12,7 @@ import {
   HStack,
   Icon,
   Divider,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { FiLock, FiCalendar, FiMapPin, FiUser, FiMail } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +29,14 @@ const Checkout = () => {
 
   const navigate = useNavigate();
   const { handleCheckout } = useBookingStore();
+
+  const bgColor = useColorModeValue("white", "black");
+  const cardBg = useColorModeValue("white", "gray.800");
+  const textColor = useColorModeValue("gray.800", "white");
+  const subTextColor = useColorModeValue("gray.600", "gray.300");
+  const buttonBg = useColorModeValue("black", "gray.700");
+  const buttonText = useColorModeValue("white", "white");
+  const dividerColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
     const plan = localStorage.getItem("selectedPlan");
@@ -90,27 +99,26 @@ const Checkout = () => {
       justify="center"
       align="center"
       minH="100vh"
-      bg="gray.50"
+      bg={bgColor}
       p={{ base: 4, md: 0 }}
     >
       <Card
-        p={8}
+        p={24}
         w="100%"
         maxW="900px"
         boxShadow="xl"
         borderRadius="2xl"
         border="1px solid"
-        borderColor="gray.100"
-        bg="white"
+        borderColor={useColorModeValue("gray.100", "gray.700")}
+        bg={cardBg}
       >
         <Flex
           direction={{ base: "column", md: "row" }}
           gap={8}
           justify="space-between"
         >
-          {/* Plan Summary */}
           <VStack align="start" spacing={6} flex={1}>
-            <Heading size="lg" fontWeight="700" color="gray.800">
+            <Heading size="lg" fontWeight="700" color={textColor}>
               Your Plan Summary
             </Heading>
             <Box
@@ -125,7 +133,7 @@ const Checkout = () => {
                 <Heading size="md" color={`${selectedPlan.bgColor}.700`}>
                   {selectedPlan.name}
                 </Heading>
-                <Divider borderColor="gray.200" />
+                <Divider borderColor={dividerColor} />
                 <HStack spacing={4}>
                   <Box
                     bg={`${selectedPlan.bgColor}.50`}
@@ -133,45 +141,40 @@ const Checkout = () => {
                     borderRadius="md"
                   >
                     <Text fontSize="sm" color={`${selectedPlan.bgColor}.700`}>
-                      🛡️ {selectedPlan.coverage}% Coverage
-                    </Text>
-                  </Box>
-                  <Box
-                    bg={`${selectedPlan.bgColor}.50`}
-                    p={2}
-                    borderRadius="md"
-                  >
-                    <Text fontSize="sm" color={`${selectedPlan.bgColor}.700`}>
-                      💰 ${selectedPlan.price}/mo
+                      💰 ${selectedPlan.price}
                     </Text>
                   </Box>
                 </HStack>
                 <VStack align="start" spacing={1} mt={4}>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color={subTextColor}>
                     Premiums: {selectedPlan.premium}
-                  </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    Out-of-Pocket: {selectedPlan.outOfPocket}
                   </Text>
                 </VStack>
               </VStack>
             </Box>
             {/* Selected Date & Time */}
             <Box w="100%" mt={4}>
-              <Heading size="sm" mb={3} color="gray.700">
+              <Heading size="sm" mb={3} color={subTextColor}>
                 <Icon as={FiCalendar} mr={2} /> Selected Time & Date
               </Heading>
-              <Card p={4} bg="gray.50" borderRadius="lg">
+              <Card
+                p={4}
+                bg={useColorModeValue("gray.50", "gray.700")}
+                borderRadius="lg"
+              >
                 <VStack align="start" spacing={2}>
                   <HStack>
-                    <Text fontSize="sm" fontWeight="500" color="gray.600">
+                    <Text fontSize="sm" fontWeight="500" color={subTextColor}>
                       📅 {formattedDate}
                     </Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text
+                      fontSize="sm"
+                      color={useColorModeValue("gray.500", "gray.400")}
+                    >
                       ({selectedDetails.selectedDay})
                     </Text>
                   </HStack>
-                  <Text fontSize="sm" color="gray.600">
+                  <Text fontSize="sm" color={subTextColor}>
                     🕒 {selectedDetails.startTime} - {selectedDetails.endTime}
                   </Text>
                 </VStack>
@@ -180,26 +183,33 @@ const Checkout = () => {
           </VStack>
 
           <VStack align="start" spacing={6} flex={1}>
-            <Heading size="lg" fontWeight="700" color="gray.800">
+            <Heading size="lg" fontWeight="700" color={textColor}>
               Contact Information
             </Heading>
             <VStack w="100%" spacing={4}>
               <Box w="100%">
-                <Text mb={2} color="gray.600" fontWeight="500">
+                <Text mb={2} color={subTextColor} fontWeight="500">
                   <Icon as={FiUser} mr={2} /> Full Name
                 </Text>
                 <Input
-                  placeholder="John Doe"
+                  placeholder="John Gyan"
                   name="userName"
                   value={formData.userName}
                   onChange={handleInputChange}
                   variant="filled"
-                  focusBorderColor="teal.400"
                   size="lg"
+                  _focus={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
+                  _focusVisible={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
                 />
               </Box>
               <Box w="100%">
-                <Text mb={2} color="gray.600" fontWeight="500">
+                <Text mb={2} color={subTextColor} fontWeight="500">
                   <Icon as={FiMail} mr={2} /> Email Address
                 </Text>
                 <Input
@@ -209,12 +219,19 @@ const Checkout = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   variant="filled"
-                  focusBorderColor="teal.400"
                   size="lg"
+                  _focus={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
+                  _focusVisible={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
                 />
               </Box>
               <Box w="100%">
-                <Text mb={2} color="gray.600" fontWeight="500">
+                <Text mb={2} color={subTextColor} fontWeight="500">
                   <Icon as={FiMapPin} mr={2} /> Event Location
                 </Text>
                 <Input
@@ -223,12 +240,20 @@ const Checkout = () => {
                   value={formData.eventLocation}
                   onChange={handleInputChange}
                   variant="filled"
-                  focusBorderColor="teal.400"
                   size="lg"
+                  _focus={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
+                  _focusVisible={{
+                    borderColor: "transparent",
+                    boxShadow: "none",
+                  }}
                 />
               </Box>
               <Button
-                colorScheme="teal"
+                bg={buttonBg}
+                color={buttonText}
                 size="lg"
                 w="100%"
                 mt={4}

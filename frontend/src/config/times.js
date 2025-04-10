@@ -6,4 +6,4 @@ export const MAX_FILE_SIZE = 1024 * 1024 * 5; // 5MB
 
 export const categories = ["all", "Weddings", "Photoshoots"];
 
-export const now = new Date(); // Do not use this in mutated functions, e.g. setHours(0, 0, 0, 0)
+export const now = new Date();

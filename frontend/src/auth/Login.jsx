@@ -1,156 +1,194 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import {
   Box,
   FormControl,
-  FormLabel,
   Input,
   Button,
   Heading,
   Text,
-  useBreakpointValue,
+  VStack,
+  HStack,
+  Divider,
   useColorModeValue,
+  Icon,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/useUserStore";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook, FaGithub } from "react-icons/fa";
 
 const Login = ({ bg }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const { login, checkingAuth } = useUserStore();
-  // Check if the screen size is large enough to show the image section
-  const isLargeScreen = useBreakpointValue({ base: false, md: true });
+  const { login, googleLogin, checkingAuth, user } = useUserStore();
   const navigate = useNavigate();
   const textColor = useColorModeValue("gray.600", "gray.200");
+  const cardBg = useColorModeValue("white", "gray.800");
+  const buttonTextColor = useColorModeValue("white", "black");
+  const buttonBg = useColorModeValue("black", "gray.200");
 
-  const handleRegister = () => {
-    navigate(`/register`);
-  };
+  const handleRegister = () => navigate("/register");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    login(formData);
-    navigate("/");
+    try {
+      await login(formData);
+      const role = useUserStore.getState().user?.role;
+      if (role === "admin") {
+        navigate("/manage-bookings");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5002/api/customer/google";
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get("accessToken");
+
+    if (accessToken && !user) {
+      googleLogin(accessToken)
+        .then(() => {
+          navigate("/");
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        })
+        .catch((error) => console.error("Google login failed:", error));
+    }
+  }, [googleLogin, navigate, user]);
+
   return (
     <Box
-      bg={bg}
-      p={20}
-      rounded="lg"
+      minH="100vh"
       display="flex"
-      justifyContent="space-around"
+      alignItems="center"
+      justifyContent="center"
+      bg={bg}
+      p={{ base: 4, md: 8 }}
     >
       <Box
-        w="full"
-        md={{ w: "50%" }}
-        p={8}
-        display="flex"
-        flexDirection="column"
-        spacing={6}
+        w="100%"
+        maxW="md"
+        bg={cardBg}
+        p={{ base: 6, md: 8 }}
+        rounded="2xl"
+        shadow="xl"
       >
-        <form
-          onSubmit={handleLogin}
-          style={{ display: "flex", flexDirection: "column", gap: "24px" }}
-        >
-          <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
-          <Heading as="h2" size="lg" textAlign="center" mb={6}>
+        <VStack spacing={6}>
+          <Heading as="h1" size="xl" fontWeight="800" letterSpacing="tight">
             Welcome Back
           </Heading>
-
-          {/* Email */}
-          <FormControl id="email" isRequired>
-            <FormLabel fontSize="sm">Email</FormLabel>
-            <Input
-              type="email"
-              name="email"
-              id="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              placeholder="Enter your email"
-              required
-              focusBorderColor="blue.500"
-              borderColor="gray.300"
-              _focus={{
-                borderColor: "gray.700",
-                ring: "1px",
-                ringColor: "blue.200",
-              }}
-            />
-          </FormControl>
-
-          <FormControl id="password" isRequired>
-            <FormLabel fontSize="sm">Password</FormLabel>
-            <Input
-              type="password"
-              name="password"
-              id="password"
-              value={formData.password}
-              required
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              placeholder="********"
-              focusBorderColor="blue.500"
-              borderColor="gray.300"
-              _focus={{
-                borderColor: "gray.700",
-                ring: "1px",
-                ringColor: "blue.200",
-              }}
-            />
-          </FormControl>
-
-          <Button
-            type="submit"
-            bg="black"
-            color="white"
-            w="full"
-            p={3}
-            _hover={{ bg: "gray.700" }}
-            mt={4}
-          >
-            Sign In
-          </Button>
-
-          <Text textAlign="center" fontSize="sm" mt={4}>
-            Don't have an account?{" "}
-            <a
-              onClick={handleRegister}
-              style={{
-                fontWeight: "bold",
-                textDecoration: "underline",
-              }}
-            >
-              Register
-            </a>
+          <Text color={textColor} textAlign="center">
+            Sign in to continue to your account
           </Text>
-        </form>
-      </Box>
 
-      {isLargeScreen && (
-        <Box
-          p={4}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          w="1/2"
-        >
-          <img
-            src="/media/camera.jpg"
-            alt="camera"
-            style={{
-              borderRadius: "8px",
-              width: "500px",
-              height: "500px",
-              objectFit: "cover",
-            }}
-          />
-        </Box>
-      )}
+          <VStack spacing={4} w="full">
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FcGoogle} boxSize={5} />}
+              onClick={handleGoogleLogin}
+              isLoading={checkingAuth}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with Google
+            </Button>
+
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FaGithub} boxSize={5} />}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with GitHub
+            </Button>
+
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FaFacebook} boxSize={5} />}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with Facebook
+            </Button>
+          </VStack>
+
+          <HStack w="full" my={4}>
+            <Divider />
+            <Text fontSize="sm" px={2} color="gray.500">
+              OR
+            </Text>
+            <Divider />
+          </HStack>
+
+          <form onSubmit={handleLogin} style={{ width: "100%" }}>
+            <VStack spacing={5} w="full">
+              <FormControl id="email">
+                <Input
+                  type="email"
+                  placeholder="Email address"
+                  size="lg"
+                  borderRadius="lg"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  focusBorderColor="blue.500"
+                />
+              </FormControl>
+
+              <FormControl id="password">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  size="lg"
+                  borderRadius="lg"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  focusBorderColor="blue.500"
+                />
+              </FormControl>
+
+              <Button
+                type="submit"
+                bg={buttonBg}
+                color={buttonTextColor}
+                size="lg"
+                w="full"
+                borderRadius="lg"
+                isLoading={checkingAuth}
+                _hover={{ transform: "translateY(-1px)", shadow: "md" }}
+              >
+                Sign In
+              </Button>
+            </VStack>
+          </form>
+
+          <Text textAlign="center" fontSize="sm" color={textColor}>
+            Don't have an account?{" "}
+            <Button
+              variant="link"
+              onClick={handleRegister}
+              _hover={{ textDecoration: "underline" }}
+            >
+              Create account
+            </Button>
+          </Text>
+        </VStack>
+      </Box>
     </Box>
   );
 };

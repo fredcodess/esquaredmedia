@@ -26,7 +26,7 @@ export const useOpeningStore = create((set) => ({
       set({
         openingHours: data,
         loading: false,
-        selectedDays: data, // Initialize selectedDays with fetched data
+        selectedDays: data,
       });
     } catch (error) {
       console.error("Error fetching opening hours:", error);
@@ -37,7 +37,7 @@ export const useOpeningStore = create((set) => ({
   changeOpeningHours: async (days) => {
     set({ loading: true });
     try {
-      console.log("Sending data:", JSON.stringify(days)); // Debug log
+      console.log("Sending data:", JSON.stringify(days));
       const res = await fetch("/api/opening/change-hours", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

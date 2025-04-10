@@ -1,16 +1,20 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Strategy as FacebookStrategy } from "passport-facebook";
-import { Strategy as InstagramStrategy } from "passport-instagram";
 import User from "../models/customer.model.js";
 import dotenv from "dotenv";
+import {
+  generateTokens,
+  storeRefreshToken,
+} from "../controllers/customer.controller.js";
+
 dotenv.config();
+
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5001/auth/google/callback",
+      callbackURL: "http://localhost:5002/api/customer/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -19,12 +23,18 @@ passport.use(
         if (!user) {
           user = await User.create({
             googleId: profile.id,
-            name: profile.displayName,
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName || "",
             email: profile.emails[0].value,
+            password: "google-auth-" + Math.random().toString(36).slice(2),
+            role: "customer",
           });
         }
 
-        return done(null, user);
+        const tokens = generateTokens(user._id);
+        await storeRefreshToken(user._id, tokens.refreshToken);
+
+        return done(null, { user, tokens });
       } catch (error) {
         return done(error, null);
       }
@@ -32,58 +42,17 @@ passport.use(
   )
 );
 
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:5001/auth/facebook/callback",
-      profileFields: ["id", "displayName", "email", "picture.type(large)"],
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        let user = await User.findOne({ facebookId: profile.id });
+passport.serializeUser((data, done) => {
+  done(null, data.user._id);
+});
 
-        if (!user) {
-          user = await User.create({
-            facebookId: profile.id,
-            name: profile.displayName,
-            email: profile.emails?.[0]?.value || "",
-          });
-        }
-
-        return done(null, user);
-      } catch (error) {
-        return done(error, null);
-      }
-    }
-  )
-);
-
-passport.use(
-  new InstagramStrategy(
-    {
-      clientID: process.env.INSTAGRAM_CLIENT_ID,
-      clientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/instagram/callback",
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        let user = await User.findOne({ instagramId: profile.id });
-
-        if (!user) {
-          user = await User.create({
-            instagramId: profile.id,
-            name: profile.displayName,
-          });
-        }
-
-        return done(null, user);
-      } catch (error) {
-        return done(error, null);
-      }
-    }
-  )
-);
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 export default passport;

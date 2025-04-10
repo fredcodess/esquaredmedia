@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteContact,
+  getAnalyticsData,
   getContact,
   getUpdateContact,
   sendEmailResponse,
@@ -20,6 +21,7 @@ router.get("/enquiries", getContact);
 router.get("/enquiries/:id", getUpdateContact);
 router.delete("/enquiries/:id", deleteContact);
 router.post("/respond/:id", sendEmailResponse);
+router.get("/analytics", getAnalyticsData);
 
 // booking
 router.get("/manage-bookings", getBooking);

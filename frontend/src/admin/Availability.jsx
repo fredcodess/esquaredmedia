@@ -11,13 +11,21 @@ import {
   VStack,
   HStack,
   FormLabel,
-  Tag,
   Select,
   FormControl,
+  useColorMode,
+  IconButton,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 import "../styles/Calendar.css";
 
 const Availability = () => {
+  const { colorMode } = useColorMode();
   const {
     openingHours,
     closedDays,
@@ -28,7 +36,6 @@ const Availability = () => {
     openDay,
     loading,
   } = useOpeningStore();
-  // Initialize selectedDays with fetched openingHours
   const [selectedDays, setSelectedDays] = useState(openingHours);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(true);
@@ -46,7 +53,6 @@ const Availability = () => {
   }, [openingHours]);
 
   useEffect(() => {
-    // Always create 7 days, merging with fetched data
     const mergedHours = daysOfWeek.map((day) => {
       const existingDay = openingHours.find(
         (oh) => oh.dayOfWeek === day.dayOfWeek
@@ -54,7 +60,7 @@ const Availability = () => {
       return (
         existingDay || {
           dayOfWeek: day.dayOfWeek,
-          name: day.name, // Include name
+          name: day.name,
           openTime: "08:00",
           closeTime: "13:00",
         }
@@ -73,8 +79,8 @@ const Availability = () => {
   };
 
   const handleSave = () => {
-    console.log("Sending data:", editableHours); // Debugging the data
-    changeOpeningHours(editableHours); // Send the modified opening hours
+    console.log("Sending data:", editableHours);
+    changeOpeningHours(editableHours);
   };
 
   const daysOfWeek = [
@@ -96,42 +102,59 @@ const Availability = () => {
     }
   };
 
+  // Color mode values
+  const bgColor = useColorModeValue("white", "gray.700");
+  const textColor = useColorModeValue("gray.800", "white");
+  const subTextColor = useColorModeValue("gray.700", "gray.200");
+  const borderColor = useColorModeValue("gray.100", "gray.600");
+  const closedDateHoverBg = useColorModeValue("gray.50", "gray.600");
+
   return (
-    <Box p={6}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={4}
-      >
-        <h1 style={{ fontSize: "1.25rem", fontWeight: "bold" }}>
-          {showCalendar ? "Calendar View" : "Hours Configuration"}
-        </h1>
+    <Box p={24} maxW="7xl" mx="auto">
+      <Flex justify="space-between" align="center" mb={8}>
+        <Text
+          fontSize="2xl"
+          fontWeight="800"
+          letterSpacing="tight"
+          color={textColor}
+        >
+          Availability Manager
+        </Text>
         <Switch
+          size="lg"
+          colorScheme="teal"
           isChecked={showCalendar}
           onChange={() => setShowCalendar((prev) => !prev)}
         />
-      </Box>
-      <Box
-        maxW="6xl"
-        mx="auto"
-        display="grid"
-        gridTemplateColumns="1fr 1fr"
+      </Flex>
+
+      <Grid
+        templateColumns={{ base: "1fr", lg: showCalendar ? "1fr 1fr" : "1fr" }}
         gap={8}
       >
-        {/* Calendar and Closed Dates Section */}
-        <HStack mb={6}>
-          {showCalendar && (
-            <Box display="flex" justifyContent="space-between" gap={8}>
-              <Box bg="white" p={6} rounded="lg" shadow="md" flex="1">
-                <Text fontSize="xl" fontWeight="semibold" mb={4}>
-                  Closed Days Calendar
+        {showCalendar ? (
+          <>
+            <GridItem>
+              <Box
+                bg={bgColor}
+                p={6}
+                rounded="2xl"
+                borderWidth="1px"
+                borderColor={borderColor}
+              >
+                <Text
+                  fontSize="xl"
+                  fontWeight="600"
+                  mb={6}
+                  color={subTextColor}
+                >
+                  Business Calendar
                 </Text>
                 <Calendar
                   value={currentDate}
                   onChange={setCurrentDate}
                   onClickDay={handleCalendarClick}
-                  minDate={new Date()} // Prevent selecting past dates
+                  minDate={new Date()}
                   tileClassName={({ date }) =>
                     closedDays.includes(
                       formatISO(date, { representation: "date" })
@@ -144,79 +167,90 @@ const Availability = () => {
                       formatISO(date, { representation: "date" })
                     )
                   }
-                  className="border rounded-lg p-2"
                 />
               </Box>
+            </GridItem>
 
-              {/* Closed Days List */}
-              <Box bg="white" p={6} rounded="lg" shadow="md" flex="1">
-                <Text fontSize="xl" fontWeight="semibold" mb={4}>
+            <GridItem>
+              <Box
+                bg={bgColor}
+                p={6}
+                rounded="2xl"
+                borderWidth="1px"
+                borderColor={borderColor}
+              >
+                <Text
+                  fontSize="xl"
+                  fontWeight="600"
+                  mb={6}
+                  color={subTextColor}
+                >
                   Closed Dates
                 </Text>
-                <VStack spacing={4}>
+                <VStack spacing={3} align="stretch">
                   {closedDays.map((date) => (
-                    <HStack
+                    <Flex
                       key={date}
                       justify="space-between"
-                      bg="gray.50"
+                      align="center"
                       p={3}
+                      _hover={{ bg: closedDateHoverBg }}
                       rounded="md"
                     >
-                      <Text>{new Date(date).toLocaleDateString()}</Text>
-                      <Button
+                      <Text fontSize="sm" fontWeight="500" color={subTextColor}>
+                        {new Date(date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </Text>
+                      <IconButton
+                        aria-label="Remove closed date"
+                        icon={<CloseIcon boxSize={3} />}
+                        size="xs"
+                        variant="ghost"
                         onClick={() => openDay(date)}
-                        color="red.500"
-                        _hover={{ color: "red.700" }}
-                        variant="link"
-                      >
-                        Remove
-                      </Button>
-                    </HStack>
+                        colorScheme="red"
+                      />
+                    </Flex>
                   ))}
                 </VStack>
               </Box>
-            </Box>
-          )}
-        </HStack>
-
-        {/* Day Configuration Section */}
-        {!showCalendar && (
-          <Box>
-            <VStack spacing={4} align="stretch">
-              {daysOfWeek.map((day, index) => {
-                const openingTime = editableHours[index]?.openTime || "08:00";
-                const closingTime = editableHours[index]?.closeTime || "13:00";
-                return (
-                  <Box
-                    key={index} // Use index as key to ensure uniqueness
-                    p={4}
-                    borderWidth={1}
-                    borderRadius="md"
-                    boxShadow="sm"
-                  >
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <span style={{ fontWeight: "600", width: "6rem" }}>
+            </GridItem>
+          </>
+        ) : (
+          <GridItem>
+            <Box
+              bg={bgColor}
+              p={6}
+              rounded="2xl"
+              borderWidth="1px"
+              borderColor={borderColor}
+            >
+              <VStack spacing={6} align="stretch">
+                {daysOfWeek.map((day, index) => (
+                  <Box key={index}>
+                    <Flex align="center" justify="space-between" mb={4}>
+                      <Text fontWeight="600" minW="120px" color={subTextColor}>
                         {day.name}
-                      </span>{" "}
-                      {/* Render `day.name` */}
-                      <FormControl width="auto">
-                        <FormLabel
-                          htmlFor={`open-time-${index}`}
-                          display="none"
-                        >
-                          Open Time
-                        </FormLabel>
+                      </Text>
+                      <Flex gap={4} align="center">
                         <Select
-                          id={`open-time-${index}`}
-                          value={openingTime}
+                          value={editableHours[index]?.openTime || "08:00"}
                           onChange={(e) =>
                             handleChange(index, "openTime", e.target.value)
                           }
+                          variant="filled"
                           size="sm"
+                          w="120px"
+                          _focus={{
+                            borderColor: "transparent",
+                            boxShadow: "none",
+                          }}
+                          _focusVisible={{
+                            borderColor: "transparent",
+                            boxShadow: "none",
+                          }}
                         >
                           {Array.from({ length: 24 }, (_, i) => (
                             <option
@@ -227,21 +261,25 @@ const Availability = () => {
                             </option>
                           ))}
                         </Select>
-                      </FormControl>
-                      <FormControl width="auto">
-                        <FormLabel
-                          htmlFor={`close-time-${index}`}
-                          display="none"
-                        >
-                          Close Time
-                        </FormLabel>
+                        <Text fontSize="sm" color="gray.500">
+                          to
+                        </Text>
                         <Select
-                          id={`close-time-${index}`}
-                          value={closingTime}
+                          value={editableHours[index]?.closeTime || "13:00"}
                           onChange={(e) =>
                             handleChange(index, "closeTime", e.target.value)
                           }
+                          variant="filled"
                           size="sm"
+                          w="120px"
+                          _focus={{
+                            borderColor: "transparent",
+                            boxShadow: "none",
+                          }}
+                          _focusVisible={{
+                            borderColor: "transparent",
+                            boxShadow: "none",
+                          }}
                         >
                           {Array.from({ length: 24 }, (_, i) => (
                             <option
@@ -252,24 +290,27 @@ const Availability = () => {
                             </option>
                           ))}
                         </Select>
-                      </FormControl>
-                    </Box>
+                      </Flex>
+                    </Flex>
+                    {index < 6 && <Divider />}
                   </Box>
-                );
-              })}
-            </VStack>
-            <Button
-              onClick={handleSave}
-              mt={4}
-              isLoading={loading}
-              loadingText="Saving..."
-              isDisabled={loading}
-            >
-              Save Changes
-            </Button>
-          </Box>
+                ))}
+                <Button
+                  onClick={handleSave}
+                  colorScheme="teal"
+                  size="lg"
+                  isLoading={loading}
+                  loadingText="Saving..."
+                  mt={6}
+                  alignSelf="flex-end"
+                >
+                  Save Schedule
+                </Button>
+              </VStack>
+            </Box>
+          </GridItem>
         )}
-      </Box>
+      </Grid>
     </Box>
   );
 };

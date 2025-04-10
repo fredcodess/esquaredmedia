@@ -33,7 +33,6 @@ export function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-// Function to round a given date up to the nearest half hour
 export const roundToNearestMinutes = (date, interval) => {
   const minutesLeftUntilNextInterval = interval - (getMinutes(date) % interval);
   return addMinutes(date, minutesLeftUntilNextInterval);
@@ -57,7 +56,6 @@ export const getOpeningTimes = (startDate, dbDays) => {
   let hours, minutes;
 
   if (isToday) {
-    // Round the current time to the nearest interval. If there are no more bookings today, throw an error
     const rounded = roundToNearestMinutes(now, OPENING_HOURS_INTERVAL);
     const tooLate = !isBefore(rounded, closing);
     if (tooLate) throw new Error("No more bookings today");
@@ -78,7 +76,6 @@ export const getOpeningTimes = (startDate, dbDays) => {
   });
   const interval = OPENING_HOURS_INTERVAL;
 
-  // Generate time slots from beginning to end at every interval
   const times = [];
   for (let i = beginning; i <= end; i = add(i, { minutes: interval })) {
     times.push(i);

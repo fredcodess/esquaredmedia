@@ -3,6 +3,7 @@ import {
   booking,
   contact,
   getProfile,
+  getVisitorCount,
   login,
   logout,
   refreshToken,
@@ -12,9 +13,11 @@ import {
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 import passport from "passport";
+import { setCookies } from "../controllers/customer.controller.js";
 
 const router = express.Router();
 
+router.get("/", getVisitorCount);
 router.post("/register", registerUser);
 router.post("/login", login);
 router.post("/logout", logout);
@@ -23,57 +26,35 @@ router.post("/remove-bg", upload.single("image"), removeBackgroundController);
 router.post("/refresh-token", refreshToken);
 router.get("/profile", protectRoute, getProfile);
 
-//contact
+// Contact and Booking
 router.post("/contact", contact);
-//booking
 router.post("/booking", booking);
 
-// passport
-// Google Auth
+// Google Auth Routes
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+  })
 );
 
 router.get(
   "/google/callback",
   passport.authenticate("google", {
+    session: false,
     failureRedirect: "http://localhost:5173/login",
   }),
   (req, res) => {
-    res.redirect("http://localhost:5173/");
+    const { user, tokens } = req.user;
+    setCookies(res, tokens.accessToken, tokens.refreshToken);
+
+    res.redirect(`http://localhost:5173/?accessToken=${tokens.accessToken}`);
   }
 );
 
-// Facebook Auth
-router.get("/facebook", passport.authenticate("facebook"));
-
-router.get(
-  "/facebook/callback",
-  passport.authenticate("facebook", {
-    failureRedirect: "http://localhost:5173/login",
-  }),
-  (req, res) => {
-    res.redirect("http://localhost:5173/");
-  }
-);
-
-// Instagram Auth
-router.get("/instagram", passport.authenticate("instagram"));
-
-router.get(
-  "/instagram/callback",
-  passport.authenticate("instagram", {
-    failureRedirect: "http://localhost:5173/login",
-  }),
-  (req, res) => {
-    res.redirect("http://localhost:5173/");
-  }
-);
-
-// Get User Info
-router.get("/user", (req, res) => {
-  res.json(req.user || null);
+router.get("/user", protectRoute, (req, res) => {
+  res.json(req.user);
 });
 
 export default router;

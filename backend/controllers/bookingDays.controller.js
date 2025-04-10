@@ -2,9 +2,6 @@ import CloseDay from "../models/closeDay.model.js";
 import { formatISO } from "date-fns";
 import Day from "../models/day.model.js";
 
-/**
- * Change opening hours for multiple days
- */
 export const changeOpeningHours = async (req, res, next) => {
   try {
     const days = req.body;
@@ -20,7 +17,7 @@ export const changeOpeningHours = async (req, res, next) => {
           {
             openTime: day.openTime,
             closeTime: day.closeTime,
-            dayOfWeek: day.dayOfWeek, // Ensure `dayOfWeek` is always present
+            dayOfWeek: day.dayOfWeek,
           },
           { new: true, upsert: true }
         );
@@ -35,9 +32,6 @@ export const changeOpeningHours = async (req, res, next) => {
   }
 };
 
-/**
- * Get all opening hours
- */
 export const getOpeningHours = async (req, res, next) => {
   try {
     const openingHours = await Day.find().lean(); // Assuming you're using the Day model to store the opening hours
@@ -52,9 +46,6 @@ export const getOpeningHours = async (req, res, next) => {
   }
 };
 
-/**
- * Close a day (prevent appointments)
- */
 export const closeDay = async (req, res, next) => {
   try {
     const { date } = req.body;
@@ -70,9 +61,6 @@ export const closeDay = async (req, res, next) => {
   }
 };
 
-/**
- * Open a previously closed day (allow appointments)
- */
 export const openDay = async (req, res, next) => {
   try {
     const { date } = req.body;
@@ -95,9 +83,6 @@ export const openDay = async (req, res, next) => {
   }
 };
 
-/**
- * Get all closed days
- */
 export const getClosedDays = async (req, res, next) => {
   try {
     const closedDays = await CloseDay.find().lean();

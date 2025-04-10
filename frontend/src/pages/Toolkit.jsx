@@ -12,14 +12,18 @@ import {
 } from "@chakra-ui/react";
 import { DownloadIcon, RepeatIcon } from "@chakra-ui/icons";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
 import useImageStore from "../store/imageStore";
+
+const MotionBox = motion(Box);
+const MotionButton = motion(Button);
+const MotionImage = motion(Image);
 
 const Toolkit = ({ bg }) => {
   const { image, isLoading, uploadImage, reset } = useImageStore();
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // Handle file drop
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     setSelectedFile(file);
@@ -47,20 +51,29 @@ const Toolkit = ({ bg }) => {
 
   return (
     <VStack minH="100vh" justify="center" spacing={6} bg={bg} p={6}>
-      <Text fontSize="2xl" fontWeight="bold">
-        Remove Image Background
-      </Text>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Text fontSize="2xl" fontWeight="bold">
+          Remove Image Background
+        </Text>
+      </motion.div>
 
       {!preview ? (
-        <Box
+        <MotionBox
           {...getRootProps()}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.05, borderColor: "blue.300" }}
+          transition={{ duration: 0.3 }}
           border="2px dashed"
           borderColor="gray.500"
           borderRadius="md"
           p={6}
           textAlign="center"
           cursor="pointer"
-          _hover={{ borderColor: "blue.300" }}
           maxW="400px"
         >
           <input {...getInputProps()} />
@@ -68,26 +81,31 @@ const Toolkit = ({ bg }) => {
           <Text mt={2} color="gray.300">
             Drag & drop an image here, or click to select
           </Text>
-        </Box>
+        </MotionBox>
       ) : (
         <VStack spacing={4}>
           {!image && (
             <VStack>
-              <Image
+              <MotionImage
                 src={preview}
                 alt="Preview"
                 maxW="300px"
                 borderRadius="md"
                 boxShadow="lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
               />
-              <Button
+              <MotionButton
                 colorScheme="blue"
                 onClick={handleUpload}
                 isLoading={isLoading}
                 loadingText="Processing..."
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
               >
                 Upload Image
-              </Button>
+              </MotionButton>
             </VStack>
           )}
 
@@ -99,21 +117,26 @@ const Toolkit = ({ bg }) => {
                 <Text fontSize="md" color="gray.400">
                   Original Image
                 </Text>
-                <Image
+                <MotionImage
                   src={preview}
                   alt="Original"
                   maxW="300px"
                   borderRadius="md"
                   boxShadow="lg"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
                 />
-                <Button
+                <MotionButton
                   leftIcon={<RepeatIcon />}
                   colorScheme="red"
                   onClick={reset}
                   mt={3}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
                 >
                   Choose Another Image
-                </Button>
+                </MotionButton>
               </VStack>
 
               <Divider
@@ -127,21 +150,26 @@ const Toolkit = ({ bg }) => {
                 <Text fontSize="md" color="gray.400">
                   Processed Image
                 </Text>
-                <Image
+                <MotionImage
                   src={image}
                   alt="Processed"
                   maxW="300px"
                   borderRadius="md"
                   boxShadow="lg"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
                 />
-                <Button
+                <MotionButton
                   leftIcon={<DownloadIcon />}
                   colorScheme="green"
                   onClick={handleDownload}
                   mt={3}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
                 >
                   Download Image
-                </Button>
+                </MotionButton>
               </VStack>
             </HStack>
           )}

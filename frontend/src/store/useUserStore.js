@@ -6,6 +6,7 @@ export const useUserStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem("authUser")) || null,
   loading: false,
   checkingAuth: true,
+  visitorCount: null,
 
   signup: async (data) => {
     set({ loading: true });
@@ -31,6 +32,26 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       set({ loading: false });
       toast.error(error.response.data.message || "An error occurred");
+    }
+  },
+
+  googleLogin: async (token) => {
+    set({ loading: true });
+    try {
+      const res = await axiosInstance.get("/customer/user", {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      set({ user: res.data, loading: false });
+      localStorage.setItem("authUser", JSON.stringify(res.data));
+      localStorage.setItem("accessToken", token); // Store token separately
+      return res.data;
+    } catch (error) {
+      set({ loading: false });
+      toast.error(
+        error.response?.data?.message || "Failed to login with Google"
+      );
+      throw error;
     }
   },
 
@@ -71,6 +92,15 @@ export const useUserStore = create((set, get) => ({
       set({ user: null, checkingAuth: false });
       localStorage.removeItem("authUser");
       throw error;
+    }
+  },
+  fetchVisitorCount: async () => {
+    try {
+      const res = await axiosInstance.get("/customer/");
+      set({ visitorCount: res.data });
+    } catch (error) {
+      console.error("Error fetching visitor count:", error);
+      toast.error("Failed to fetch visitor count.");
     }
   },
 }));

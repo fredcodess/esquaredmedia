@@ -12,6 +12,7 @@ function App() {
     checkAuth();
   }, [checkAuth]);
 
+  const isAdmin = user?.role === "admin";
   // if (checkingAuth) {
   //   return (
   //     <Center>
@@ -21,8 +22,9 @@ function App() {
   // }
   return (
     <Box minH={"100vh"} bg={useColorModeValue("#ffffff", "black ")}>
+      <Navbar />
       <AppRoutes user={user} />
-      <Footer />
+      {!isAdmin && <Footer />}
     </Box>
   );
 }

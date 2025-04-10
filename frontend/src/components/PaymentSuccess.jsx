@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Heading, Text, Spinner, VStack } from "@chakra-ui/react";
 import useBookingStore from "../store/useBookingStore";
 
-const PaymentSuccess = () => {
+const PaymentSuccess = ({ bg }) => {
   const navigate = useNavigate();
   const { booking } = useBookingStore();
   const hasBooked = useRef(false);
@@ -40,7 +40,7 @@ const PaymentSuccess = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      bg="gray.50"
+      bg={bg}
     >
       <VStack
         p={8}

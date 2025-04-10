@@ -3,7 +3,7 @@ import { useOpeningStore } from "../store/useOpeningStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 
-const SelectTime = () => {
+const SelectTime = ({ bg }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const selectedDayName = localStorage.getItem("selectedDay");
@@ -23,7 +23,7 @@ const SelectTime = () => {
     "Saturday",
   ];
 
-  const selectedDay = daysOfWeek.indexOf(selectedDayName); // Convert day name back to index
+  const selectedDay = daysOfWeek.indexOf(selectedDayName);
 
   useEffect(() => {
     fetchOpeningHours();
@@ -67,10 +67,9 @@ const SelectTime = () => {
         endTime: selectedEndTime,
       };
 
-      // Save selected time in localStorage
       localStorage.setItem("selectedTime", JSON.stringify(selectedData));
 
-      navigate("/services"); // Redirect after selecting time
+      navigate("/services");
     }
   }, [selectedStartTime, selectedEndTime, selectedDayName, navigate]);
 
@@ -80,13 +79,17 @@ const SelectTime = () => {
       align="center"
       justify="center"
       h="100vh"
-      bg="gray.50"
+      bg={bg}
       px={6}
     >
       <Heading mb={4} fontSize="2xl" color="gray.700">
-        Select Time for{" "}
+        Select{" "}
         <Text as="span" fontWeight="bold" color="blue.500">
-          {selectedDayName}
+          Start Time
+        </Text>{" "}
+        and{" "}
+        <Text as="span" fontWeight="bold" color="blue.500">
+          End Time
         </Text>
       </Heading>
 

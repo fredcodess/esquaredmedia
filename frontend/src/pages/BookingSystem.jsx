@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import { useOpeningStore } from "../store/useOpeningStore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box } from "@chakra-ui/react";
 
 const BookingSystem = () => {
   const navigate = useNavigate();
@@ -35,17 +36,25 @@ const BookingSystem = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <h2 className="text-xl font-bold mb-4">Select a Date</h2>
-      <Calendar
-        minDate={new Date()}
-        value={currentDate}
-        onChange={setCurrentDate}
-        tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
-        view="month"
-        onClickDay={handleDateClick}
-      />
-    </div>
+    <Box
+      p={24}
+      maxW="container.lg"
+      mx="auto"
+      display="flex"
+      justifyContent="center"
+      textColor="black"
+    >
+      <div className="flex h-screen flex-col items-center justify-center">
+        <Calendar
+          minDate={new Date()}
+          value={currentDate}
+          onChange={setCurrentDate}
+          tileDisabled={({ date }) => closedDays.includes(formatISO(date))}
+          view="month"
+          onClickDay={handleDateClick}
+        />
+      </div>
+    </Box>
   );
 };
 

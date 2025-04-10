@@ -12,7 +12,7 @@ import {
 const Price = ({ bg }) => {
   const { colorMode } = useColorMode();
 
-  const bgg = colorMode === "light" ? "rgb(248,241,235)" : "rgba(88,56,38,255)";
+  const bgg = colorMode === "light" ? "rgb(248,241,235)" : "gray.800";
   const headingColor =
     colorMode === "light" ? "rgba(88,56,38,255)" : "rgb(248,241,235)";
   const headingColor2 = colorMode === "light" ? "gray.800" : "gray.200";
@@ -21,12 +21,6 @@ const Price = ({ bg }) => {
   return (
     <Box bg={bg} py={24}>
       <Box maxW="7xl" mx="auto" px={{ base: 4, sm: 6, lg: 8 }}>
-        <header className="text-center mb-10">
-          <Text color={headingColor} mt={2}>
-            Packages for Weddings, Birthdays, Dinners, and More
-          </Text>
-        </header>
-
         <Stack spacing={8}>
           <section>
             <Heading

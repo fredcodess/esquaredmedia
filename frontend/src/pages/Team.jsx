@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Container,
@@ -7,9 +8,14 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react";
+import { motion } from "framer-motion";
+
+const MotionBox = motion(Box);
+const MotionImage = motion(Image);
 
 const Team = ({ bg }) => {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { colorMode } = useColorMode();
+
   return (
     <Box bg={bg} py={28}>
       <Container maxW="container.xl">
@@ -19,19 +25,18 @@ const Team = ({ bg }) => {
           alignItems="stretch"
         >
           {/* Emmanuel Snr Section */}
-          <Box
-            bg={
-              colorMode === "light" ? "rgb(248,241,235)" : "rgba(88,56,38,255)"
-            }
+          <MotionBox
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.05, boxShadow: "xl" }}
+            bg={colorMode === "light" ? "rgb(248,241,235)" : "gray.800"}
             p={6}
             rounded="2xl"
             boxShadow="lg"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
             textAlign="center"
           >
-            <Image
+            <MotionImage
               src="/media/emmSnr.png"
               alt="Emma Snr"
               w="100%"
@@ -39,8 +44,13 @@ const Team = ({ bg }) => {
               objectFit="contain"
               rounded="lg"
               mb={4}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
               sx={{
-                border: "2px solid rgba(238,92,9,1)",
+                border:
+                  colorMode === "light"
+                    ? "2px solid rgba(238,92,9,1)"
+                    : "2px solid rgba(229, 231, 235, 1)",
               }}
             />
             <VStack spacing={4}>
@@ -56,27 +66,24 @@ const Team = ({ bg }) => {
                 color={colorMode === "light" ? "gray.600" : "gray.300"}
               >
                 Hi guys! Meet Emmanuel—our Photographer, Editor, and founder of
-                ESQUAREDMEDIA! A true Jack of all Trades. His goal? To entertain
-                and create unforgettable memories through our lenses. 📸 Aka
-                "NANA"—the man behind the cameras!
+                ESQUAREDMEDIA! A true Jack of all Trades.
               </Text>
             </VStack>
-          </Box>
+          </MotionBox>
 
           {/* Hedna Section */}
-          <Box
-            bg={
-              colorMode === "light" ? "rgb(248,241,235)" : "rgba(88,56,38,255)"
-            }
+          <MotionBox
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            whileHover={{ scale: 1.05, boxShadow: "xl" }}
+            bg={colorMode === "light" ? "rgb(248,241,235)" : "gray.800"}
             p={6}
             rounded="2xl"
             boxShadow="lg"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
             textAlign="center"
           >
-            <Image
+            <MotionImage
               src="/media/hedna.png"
               alt="Hedna"
               w="100%"
@@ -84,8 +91,13 @@ const Team = ({ bg }) => {
               objectFit="contain"
               rounded="lg"
               mb={4}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
               sx={{
-                border: "2px solid rgba(238,92,9,1)",
+                border:
+                  colorMode === "light"
+                    ? "2px solid rgba(238,92,9,1)"
+                    : "2px solid rgba(229, 231, 235, 1)",
               }}
             />
             <VStack spacing={4}>
@@ -101,27 +113,24 @@ const Team = ({ bg }) => {
                 color={colorMode === "light" ? "gray.600" : "gray.300"}
               >
                 Meet Hedna—our head of social media and planning! She’s also
-                specialized in photography & content creation. As a fashion
-                designer with marketing experience, she brings the creative
-                energy! Fun fact? She has a twin brother! 😌
+                specialized in photography & content creation.
               </Text>
             </VStack>
-          </Box>
+          </MotionBox>
 
-          {/* Emmanuel (Jojo) Section */}
-          <Box
-            bg={
-              colorMode === "light" ? "rgb(248,241,235)" : "rgba(88,56,38,255)"
-            }
+          {/* Jojo Section */}
+          <MotionBox
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            whileHover={{ scale: 1.05, boxShadow: "xl" }}
+            bg={colorMode === "light" ? "rgb(248,241,235)" : "gray.800"}
             p={6}
             rounded="2xl"
             boxShadow="lg"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
             textAlign="center"
           >
-            <Image
+            <MotionImage
               src="/media/emma.png"
               alt="Jojo"
               w="100%"
@@ -129,11 +138,15 @@ const Team = ({ bg }) => {
               objectFit="contain"
               rounded="lg"
               mb={4}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
               sx={{
-                border: "2px solid rgba(238,92,9,1)",
+                border:
+                  colorMode === "light"
+                    ? "2px solid rgba(238,92,9,1)"
+                    : "2px solid rgba(229, 231, 235, 1)",
               }}
             />
-
             <VStack spacing={4}>
               <Text
                 fontSize="xl"
@@ -147,12 +160,10 @@ const Team = ({ bg }) => {
                 color={colorMode === "light" ? "gray.600" : "gray.300"}
               >
                 Meet Emmanuel aka Jojo or Kojoskiii! Our Team Manager &
-                specialist in photography, videography, and editing. Fun fact?
-                He’s a huge F1 fan 🏎️ and known for always bringing GOOD
-                VIBESSS!🔥
+                specialist in photography, videography, and editing.
               </Text>
             </VStack>
-          </Box>
+          </MotionBox>
         </Grid>
       </Container>
     </Box>

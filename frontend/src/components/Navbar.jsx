@@ -100,15 +100,25 @@ const Navbar = () => {
           )}
         </Flex>
 
-        <IconButton
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          display={{ base: "block", md: "none" }}
-          onClick={onOpen}
-          aria-label="Open Menu"
-          color={textColor}
-          bg="transparent"
-          _hover={{ bg: "gray.700" }}
-        />
+        {/* Mobile view with hamburger and color mode toggle */}
+        <Flex align="center" gap={2} display={{ base: "flex", md: "none" }}>
+          <IconButton
+            icon={colorMode === "light" ? <BedtimeIcon /> : <WbSunnyIcon />}
+            onClick={toggleColorMode}
+            aria-label="Toggle Dark Mode"
+            bg="transparent"
+            color={textColor}
+            _hover={{ bg: "gray.700" }}
+          />
+          <IconButton
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            onClick={onOpen}
+            aria-label="Open Menu"
+            color={textColor}
+            bg="transparent"
+            _hover={{ bg: "gray.700" }}
+          />
+        </Flex>
       </Flex>
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
@@ -122,16 +132,16 @@ const Navbar = () => {
                   <NavLink to="/">Home</NavLink>
                   <NavLink to="/team">Team</NavLink>
                   <NavLink to="/price">Pricing</NavLink>
-                  <NavLink to="/rembg">Remove BG</NavLink>
+                  <NavLink to="/toolkit">Remove BG</NavLink>
                   <NavLink to="/contact">Contact</NavLink>
                 </>
               )}
               {user && !isAdmin && <NavLink to="/gallery">Gallery</NavLink>}
               {isAdmin && (
                 <>
-                  <NavLink to="/admin/manage-bookings">Manage Bookings</NavLink>
-                  <NavLink to="/admin/analytics">Analytics</NavLink>
-                  <NavLink to="/admin/enquiries">Customer Service</NavLink>
+                  <NavLink to="/manage-bookings">Manage Bookings</NavLink>
+                  <NavLink to="/analytics">Analytics</NavLink>
+                  <NavLink to="/enquiries">Customer Service</NavLink>
                   <NavLink to="/dates">Availability</NavLink>
                 </>
               )}

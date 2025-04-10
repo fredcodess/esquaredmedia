@@ -16,8 +16,6 @@ const generateInvoice = async (invoiceData) => {
     const writeStream = fs.createWriteStream(invoicePath);
     doc.pipe(writeStream);
 
-    doc.fontSize(20).text("DEPOSIT INVOICE", 400, 50, { align: "right" });
-
     doc.moveDown().moveDown();
     doc.fillColor("black").fontSize(12).text("ESQUARED MEDIA", 50, 150);
     doc.fontSize(10).text("eeasquarede@ggmail.com");
@@ -34,7 +32,8 @@ const generateInvoice = async (invoiceData) => {
     doc.moveDown();
     doc.font("Helvetica-Bold").fillColor("#333333").fontSize(14);
     doc.text(
-      "Balance Due After Confirmation: ₹" + invoiceData.deposit,
+      "Balance Due After Confirmation: ₹" +
+        (invoiceData.deposit * 2.5 - invoiceData.deposit),
       400,
       230
     );
@@ -42,48 +41,31 @@ const generateInvoice = async (invoiceData) => {
     doc.moveDown();
 
     const tableTop = 280;
-    const columnWidths = [250, 100, 100, 100];
+    const columnWidths = [150, 100, 100, 100, 100];
 
     doc.fillColor("black").fontSize(10);
     doc.rect(50, tableTop, 500, 20).fill("#444").stroke();
     doc.fillColor("white").text("Service", 55, tableTop + 5);
-    doc.text("Event", 305, tableTop + 5);
+    doc.text("Date", 205, tableTop + 5);
+    doc.text("Time", 305, tableTop + 5);
     doc.text("Status", 405, tableTop + 5);
     doc.text("Deposit", 505, tableTop + 5);
 
     let position = tableTop + 25;
     doc.fillColor("black");
 
-    invoiceData.items.forEach((item) => {
-      const price = parseFloat(item.price);
-      if (isNaN(price)) {
-        console.warn("Invalid price for item:", item.name);
-        return;
-      }
-
-      const quantity = item.quantity || 1;
-      const deposit = parseFloat(item.deposit);
-      if (isNaN(deposit)) {
-        console.warn("Invalid deposit value for item:", item.name);
-        return;
-      }
-
-      doc.text(item.service_type, 55, position);
-      doc.text(item.event_type, 305, position);
-      doc.text("pending", 405, position);
-      doc.text(deposit.toFixed(2), 505, position);
-      position += 20;
-    });
-
-    const totalDeposit = parseFloat(invoiceData.deposit);
-    if (isNaN(totalDeposit)) {
-      console.warn("Invalid total deposit amount.");
+    const deposit = parseFloat(invoiceData.deposit);
+    if (isNaN(deposit)) {
+      console.warn("Invalid deposit value for item:", invoiceData.name);
       return;
     }
 
-    doc.fontSize(12).font("Helvetica-Bold");
-    doc.text("PENDING", 405, position + 10);
-    doc.text("₹" + totalDeposit.toFixed(2), 505, position + 10);
+    doc.text(invoiceData.service_type, 55, position);
+    doc.text(invoiceData.date, 205, position);
+    doc.text(invoiceData.startTime + "-" + invoiceData.endTime, 305, position);
+    doc.text("Confirmed", 405, position);
+    doc.text(deposit.toFixed(2), 505, position);
+    position += 20;
 
     doc.moveDown().moveDown();
     doc

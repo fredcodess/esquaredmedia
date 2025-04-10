@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -7,13 +7,18 @@ import {
   Button,
   Heading,
   Text,
-  useBreakpointValue,
+  Divider,
+  VStack,
   useColorModeValue,
+  Flex,
+  Icon,
 } from "@chakra-ui/react";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook, FaGithub } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
 import toast from "react-hot-toast";
 import { useUserStore } from "../store/useUserStore";
+
 const Register = ({ bg }) => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -21,218 +26,213 @@ const Register = ({ bg }) => {
     email: "",
     password: "",
   });
-  const { signup, checkingAuth } = useUserStore();
 
-  const validateForm = () => {
-    if (!formData.firstName.trim()) {
-      toast.error("First name is required");
-      return false;
-    }
-    if (!formData.lastName.trim()) {
-      toast.error("Last name is required");
-      return false;
-    }
-    if (!formData.email.trim()) {
-      toast.error("Email is required");
-      return false;
-    }
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      toast.error("Invalid email format");
-      return false;
-    }
-    if (!formData.password) {
-      toast.error("Password is required");
-      return false;
-    }
-    if (formData.password.length < 8) {
-      toast.error("Password must be at least 6 characters");
-      return false;
-    }
-    return true;
-  };
-  const isLargeScreen = useBreakpointValue({ base: false, md: true });
+  const { signup } = useUserStore();
+  const { googleLogin, checkingAuth, user } = useUserStore();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    navigate(`/login`);
+  const inputBg = useColorModeValue("gray.100", "gray.700");
+  const buttonTextColor = useColorModeValue("white", "black");
+  const buttonBg = useColorModeValue("black", "gray.200");
+
+  const validateForm = () => {
+    if (!formData.firstName.trim())
+      return toast.error("First name is required");
+    if (!formData.lastName.trim()) return toast.error("Last name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 8)
+      return toast.error("Password must be at least 8 characters");
+
+    return true;
   };
+
+  const handleLogin = () => navigate(`/login`);
 
   const handleRegister = (e) => {
     e.preventDefault();
-
-    const success = validateForm();
-
-    if (success === true) {
-      console.log("Form Data being sent to signup:", formData);
+    if (validateForm()) {
       signup(formData);
       navigate("/login");
     }
   };
-  const textColor = useColorModeValue("gray.600", "gray.200");
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5002/api/customer/google";
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get("accessToken");
+
+    if (accessToken && !user) {
+      googleLogin(accessToken)
+        .then(() => {
+          navigate("/");
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        })
+        .catch((error) => console.error("Google login failed:", error));
+    }
+  }, [googleLogin, navigate, user]);
 
   return (
     <Box
       bg={bg}
-      p={20}
-      rounded="lg"
+      minH="100vh"
       display="flex"
-      justifyContent="space-around"
+      alignItems="center"
+      justifyContent="center"
+      px={4}
     >
-      <Box
-        w="full"
-        md={{ w: "50%" }}
-        p={8}
-        display="flex"
-        flexDirection="column"
-        spacing={6}
+      <Flex
+        w={{ base: "full", md: "800px" }}
+        boxShadow="lg"
+        borderRadius="lg"
+        overflow="hidden"
+        bg={useColorModeValue("white", "gray.800")}
       >
-        <form
-          action="/register"
-          method="POST"
-          onSubmit={handleRegister}
-          style={{ display: "flex", flexDirection: "column", gap: "24px" }}
-        >
+        {/* Left - Registration Form */}
+        <Box w={{ base: "full", md: "60%" }} p={8}>
           <Heading as="h2" size="lg" textAlign="center" mb={6}>
-            Create a new Account
+            Create an Account
           </Heading>
 
-          <Box display="flex" gap={4}>
-            <FormControl id="firstName" isRequired>
-              <FormLabel fontSize="sm">Firstname</FormLabel>
+          <form onSubmit={handleRegister}>
+            <Flex gap={4}>
+              <FormControl id="firstName" isRequired>
+                <FormLabel fontSize="sm">First Name</FormLabel>
+                <Input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
+                  placeholder="First Name"
+                  bg={inputBg}
+                  focusBorderColor="blue.500"
+                />
+              </FormControl>
+
+              <FormControl id="lastName" isRequired>
+                <FormLabel fontSize="sm">Last Name</FormLabel>
+                <Input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
+                  placeholder="Last Name"
+                  bg={inputBg}
+                  focusBorderColor="blue.500"
+                />
+              </FormControl>
+            </Flex>
+
+            <FormControl id="email" isRequired mt={4}>
+              <FormLabel fontSize="sm">Email</FormLabel>
               <Input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
+                type="email"
+                value={formData.email}
                 onChange={(e) =>
-                  setFormData({ ...formData, firstName: e.target.value })
+                  setFormData({ ...formData, email: e.target.value })
                 }
-                placeholder="Firstname"
-                required
+                placeholder="Enter your email"
+                bg={inputBg}
                 focusBorderColor="blue.500"
-                borderColor="gray.300"
-                _focus={{
-                  borderColor: "gray.700",
-                  ring: "1px",
-                  ringColor: "blue.200",
-                }}
               />
             </FormControl>
-            <FormControl id="lastName" isRequired>
-              <FormLabel fontSize="sm">Lastname</FormLabel>
-              <Input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastName: e.target.value })
-                }
-                placeholder="Lastname"
-                minLength={5}
-                maxLength={5}
-                required
-                focusBorderColor="blue.500"
-                borderColor="gray.300"
-                _focus={{
-                  borderColor: "gray.700",
-                  ring: "1px",
-                  ringColor: "blue.200",
-                }}
-              />
-            </FormControl>
-          </Box>
 
-          <FormControl id="email" isRequired>
-            <FormLabel fontSize="sm">Email</FormLabel>
-            <Input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              placeholder="Enter your email"
-              required
-              focusBorderColor="blue.500"
-              borderColor="gray.300"
-              _focus={{
-                borderColor: "gray.700",
-                ring: "1px",
-                ringColor: "blue.200",
-              }}
-            />
-          </FormControl>
-
-          <Box display="flex" gap={4}>
-            <FormControl id="password" isRequired>
+            <FormControl id="password" isRequired mt={4}>
               <FormLabel fontSize="sm">Password</FormLabel>
               <Input
                 type="password"
-                name="password"
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                placeholder="Password"
+                placeholder="********"
                 minLength={8}
-                required
+                bg={inputBg}
                 focusBorderColor="blue.500"
-                borderColor="gray.300"
-                _focus={{
-                  borderColor: "gray.700",
-                  ring: "1px",
-                  ringColor: "blue.200",
-                }}
               />
             </FormControl>
-          </Box>
 
-          <Button
-            type="submit"
-            bg="black"
-            color="white"
-            w="full"
-            p={3}
-            _hover={{ bg: "gray.700" }}
-            mt={4}
-          >
-            Sign Up
-          </Button>
-
-          <Text textAlign="center" fontSize="sm" mt={4}>
-            Already have an account?{" "}
-            <a
-              onClick={handleLogin}
-              style={{
-                fontWeight: "bold",
-                textDecoration: "underline",
-              }}
+            <Button
+              type="submit"
+              bg={buttonBg}
+              color={buttonTextColor}
+              size="lg"
+              w="full"
+              borderRadius="lg"
+              _hover={{ transform: "translateY(-1px)", shadow: "md" }}
             >
-              Sign In
-            </a>
-          </Text>
-        </form>
-      </Box>
+              Sign Up
+            </Button>
 
-      {isLargeScreen && (
+            <Text textAlign="center" fontSize="sm" mt={4}>
+              Already have an account?{" "}
+              <Text
+                as="span"
+                fontWeight="bold"
+                cursor="pointer"
+                onClick={handleLogin}
+                _hover={{ textDecoration: "underline" }}
+              >
+                Sign In
+              </Text>
+            </Text>
+          </form>
+        </Box>
+
         <Box
-          p={4}
+          w={{ base: "full", md: "40%" }}
+          p={8}
+          bg={useColorModeValue("gray.50", "gray.800")}
           display="flex"
+          flexDirection="column"
           justifyContent="center"
           alignItems="center"
-          w="1/2"
         >
-          <img
-            src="/media/camera.jpg"
-            alt="camera"
-            style={{
-              borderRadius: "8px",
-              width: "500px",
-              height: "500px",
-              objectFit: "cover",
-            }}
-          />
+          <Heading as="h3" size="md" mb={4}>
+            Or Sign In With
+          </Heading>
+
+          <VStack spacing={4} w="full">
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FcGoogle} boxSize={5} />}
+              onClick={handleGoogleLogin}
+              isLoading={checkingAuth}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with Google
+            </Button>
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FaGithub} boxSize={5} />}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with GitHub
+            </Button>
+            <Button
+              w="full"
+              variant="outline"
+              leftIcon={<Icon as={FaFacebook} boxSize={5} />}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+            >
+              Continue with Facebook
+            </Button>
+          </VStack>
         </Box>
-      )}
+      </Flex>
     </Box>
   );
 };
