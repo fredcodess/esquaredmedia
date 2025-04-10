@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useUserStore } from "../store/useUserStore";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 const MotionBox = motion(Box);
 const MotionButton = motion(Button);
@@ -24,6 +25,7 @@ const Home = ({ bg }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const scrollRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVisitorCount();
@@ -46,6 +48,14 @@ const Home = ({ bg }) => {
     } else {
       container.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
+  };
+
+  const handleBooking = () => {
+    navigate("/booking");
+  };
+
+  const handleLearnMore = () => {
+    navigate("/team");
   };
 
   return (
@@ -91,7 +101,7 @@ const Home = ({ bg }) => {
             <MotionButton
               colorScheme="gray"
               as="a"
-              href="/views/customer/authentication/login.html"
+              onClick={handleBooking}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
@@ -100,7 +110,7 @@ const Home = ({ bg }) => {
             <MotionButton
               colorScheme="gray"
               as="a"
-              href="/team"
+              onClick={handleLearnMore}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >

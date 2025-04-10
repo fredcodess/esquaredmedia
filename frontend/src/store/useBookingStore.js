@@ -73,28 +73,22 @@ const useBookingStore = create((set) => ({
 
   handleCheckout: async (deposit, email) => {
     try {
-      const response = await fetch(
-        "http://localhost:5002/api/customer/create-checkout-session",
+      const response = await axiosInstance.post(
+        "/customer/create-checkout-session",
+        { deposit, email }, // Data payload
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ deposit, email }),
         }
       );
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create checkout session.");
-      }
-
-      const data = await response.json();
+      const data = response.data; // Axios automatically parses JSON into response.data
       if (!data.url) {
         throw new Error("Stripe session URL is missing in the response.");
       }
 
-      window.location.href = data.url;
+      window.location.href = data.url; // Redirect to Stripe Checkout
     } catch (error) {
       console.error("Error redirecting to Stripe Checkout:", error);
       alert("Failed to initiate checkout. Please try again.");
