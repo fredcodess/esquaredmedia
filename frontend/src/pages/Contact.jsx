@@ -1,7 +1,6 @@
 import {
   Box,
   FormControl,
-  FormLabel,
   Input,
   Textarea,
   Button,
@@ -14,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { contactStore } from "../store/contactStore";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const MotionBox = motion(Box);
 const MotionButton = motion(Button);
@@ -25,7 +25,7 @@ const Contact = ({ bg }) => {
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
-    description: "",
+    subject: "", // Fixed typo: description -> subject
     message: "",
   });
 
@@ -34,10 +34,36 @@ const Contact = ({ bg }) => {
   const buttonBg = useColorModeValue("black", "gray.200");
   const buttonText = useColorModeValue("white", "black");
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    if (!formData.fullname.trim()) {
+      return false;
+    }
+    if (!formData.email.trim()) {
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      return false;
+    }
+    if (!formData.subject.trim()) {
+      return false;
+    }
+    if (!formData.message.trim()) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    contact(formData);
-    navigate("/");
+
+    if (!validateForm()) return;
+
+    try {
+      await contact(formData);
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message || "Failed to send message");
+    }
   };
 
   return (
@@ -78,7 +104,7 @@ const Contact = ({ bg }) => {
 
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={5} w="full">
-              <FormControl id="fullname">
+              <FormControl id="fullname" isRequired>
                 <Input
                   type="text"
                   placeholder="Full Name"
@@ -100,7 +126,7 @@ const Contact = ({ bg }) => {
                 />
               </FormControl>
 
-              <FormControl id="email">
+              <FormControl id="email" isRequired>
                 <Input
                   type="email"
                   placeholder="Email Address"
@@ -122,7 +148,7 @@ const Contact = ({ bg }) => {
                 />
               </FormControl>
 
-              <FormControl id="subject">
+              <FormControl id="subject" isRequired>
                 <Input
                   type="text"
                   placeholder="Subject"
@@ -144,7 +170,7 @@ const Contact = ({ bg }) => {
                 />
               </FormControl>
 
-              <FormControl id="message">
+              <FormControl id="message" isRequired>
                 <Textarea
                   placeholder="Your Message"
                   size="lg"

@@ -8,11 +8,10 @@ export const contactStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/customer/contact", data);
       set({ authUser: res.data });
-      toast.success("Account created successfully");
+      toast.success("Message Sent successfully");
     } catch (error) {
       console.error("Contacting error:", error.response?.data);
-      const errorMessage = error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      toast.error("Error Occured. Review all contact fields.");
     } finally {
       set({ isContacting: false });
     }

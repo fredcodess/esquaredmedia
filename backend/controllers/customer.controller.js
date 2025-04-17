@@ -5,6 +5,7 @@ import Booking from "../models/booking.model.js";
 import removeBackground from "@imgly/background-removal-node";
 import jwt from "jsonwebtoken";
 import fs from "fs";
+import bcrypt from "bcrypt";
 import VisitorCount from "../models/VisitorCount.model.js";
 import BookingCount from "../models/bookingCount.model.js";
 
@@ -222,4 +223,9 @@ export const booking = async (req, res) => {
     console.log("Error in booking controller", error.message);
     res.status(500).json({ message: error.message });
   }
+};
+
+//for testing
+export const isPasswordCorrect = async (enteredPassword, hashedPassword) => {
+  return await bcrypt.compare(enteredPassword, hashedPassword);
 };

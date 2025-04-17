@@ -27,3 +27,6 @@ uploads
 
 .env
 
+test
+
+babel.config.mjs

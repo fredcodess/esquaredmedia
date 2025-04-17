@@ -50,11 +50,11 @@ const PaymentSuccess = ({ bg }) => {
         textAlign="center"
         spacing={4}
       >
-        <Heading color="teal.500">🎉 Payment Successful!</Heading>
+        <Heading color="black">🎉 Payment Successful!</Heading>
         <Text color="gray.600">
           Your booking has been confirmed. Redirecting you to the homepage...
         </Text>
-        <Spinner size="lg" color="teal.500" />
+        <Spinner size="lg" color="black" />
       </VStack>
     </Box>
   );

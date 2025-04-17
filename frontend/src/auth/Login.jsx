@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../store/useUserStore";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 const Login = ({ bg }) => {
   const [formData, setFormData] = useState({
@@ -38,16 +39,18 @@ const Login = ({ bg }) => {
       const role = useUserStore.getState().user?.role;
       if (role === "admin") {
         navigate("/manage-bookings");
-      } else {
+      } else if (role === "customer") {
         navigate("/");
+        toast.success("Logged In Successfully");
       }
     } catch (error) {
       console.error("Login failed:", error);
+      toast.error("An error occurred");
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5002/api/customer/google";
+    window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
   };
 
   useEffect(() => {

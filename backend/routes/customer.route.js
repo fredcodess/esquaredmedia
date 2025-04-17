@@ -14,6 +14,9 @@ import { protectRoute } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 import passport from "passport";
 import { setCookies } from "../controllers/customer.controller.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -43,13 +46,13 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "http://localhost:5173/login",
+    failureRedirect: process.env.FAILURE_REDIRECT,
   }),
   (req, res) => {
     const { user, tokens } = req.user;
     setCookies(res, tokens.accessToken, tokens.refreshToken);
 
-    res.redirect(`http://localhost:5173/?accessToken=${tokens.accessToken}`);
+    res.redirect(process.env.CLIENT_URL);
   }
 );
 

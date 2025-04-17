@@ -55,12 +55,13 @@ const Register = ({ bg }) => {
     e.preventDefault();
     if (validateForm()) {
       signup(formData);
-      navigate("/login");
+      navigate("/");
+      toast.success("Registered Successfully");
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5002/api/customer/google";
+    window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL;
   };
 
   useEffect(() => {
