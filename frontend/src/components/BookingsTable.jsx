@@ -24,6 +24,9 @@ import {
   useBreakpointValue,
   useColorModeValue,
   useColorMode,
+  Input,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { DeleteIcon, EmailIcon } from "@chakra-ui/icons";
 import useBookingStore from "../store/useBookingStore";
@@ -41,6 +44,9 @@ const BookingsTable = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [responseText, setResponseText] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const toast = useToast();
   const { colorMode } = useColorMode();
 
@@ -72,6 +78,34 @@ const BookingsTable = () => {
       isClosable: true,
     });
   };
+
+  const filteredBookings = bookings.filter((booking) => {
+    const bookingDate = new Date(booking.selectedDate);
+
+    if (filter === "pending") return booking.status === "Pending";
+    if (filter === "responded") return booking.status === "Responded";
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setUTCHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setUTCHours(23, 59, 59, 999);
+
+      if (end < start) {
+        toast({
+          title: "Invalid Date Range",
+          description: "End date cannot be before start date.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        return true;
+      }
+
+      return bookingDate >= start && bookingDate <= end;
+    }
+    return true;
+  });
 
   const bgColor = useColorModeValue("white", "gray.800");
   const tableHoverBg = useColorModeValue("gray.100", "gray.700");
@@ -105,6 +139,74 @@ const BookingsTable = () => {
         Booking Requests
       </Heading>
 
+      {/* Filter Controls */}
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        mb={4}
+        gap={4}
+        justify="space-between"
+        align="center"
+      >
+        <Flex gap={2}>
+          <Button
+            colorScheme={filter === "all" ? "blue" : "gray"}
+            onClick={() => setFilter("all")}
+            size={{ base: "sm", md: "md" }}
+          >
+            All
+          </Button>
+          <Button
+            colorScheme={filter === "pending" ? "blue" : "gray"}
+            onClick={() => setFilter("pending")}
+            size={{ base: "sm", md: "md" }}
+          >
+            Pending
+          </Button>
+          <Button
+            colorScheme={filter === "responded" ? "blue" : "gray"}
+            onClick={() => setFilter("responded")}
+            size={{ base: "sm", md: "md" }}
+          >
+            Responded
+          </Button>
+        </Flex>
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          gap={4}
+          w={{ base: "100%", md: "auto" }}
+        >
+          <FormControl>
+            <FormLabel fontSize={{ base: "sm", md: "md" }}>
+              Start Date
+            </FormLabel>
+            <Input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              size={{ base: "sm", md: "md" }}
+              max={endDate || undefined}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel fontSize={{ base: "sm", md: "md" }}>End Date</FormLabel>
+            <Input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              size={{ base: "sm", md: "md" }}
+              min={startDate || undefined}
+            />
+          </FormControl>
+        </Flex>
+      </Flex>
+
+      {startDate && endDate && (
+        <Text mb={2} fontSize={{ base: "sm", md: "md" }}>
+          Showing bookings from {new Date(startDate).toLocaleDateString()} to{" "}
+          {new Date(endDate).toLocaleDateString()}
+        </Text>
+      )}
+
       <Box
         borderRadius="lg"
         overflowX="auto"
@@ -125,7 +227,7 @@ const BookingsTable = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {bookings.map((booking) => (
+            {filteredBookings.map((booking) => (
               <Tr
                 key={booking._id}
                 _hover={{ bg: tableHoverBg, transition: "0.2s" }}

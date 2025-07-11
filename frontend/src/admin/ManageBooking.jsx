@@ -3,10 +3,7 @@ import BookingsTable from "../components/BookingsTable";
 
 const ManageBooking = () => {
   return (
-    <Box p={5}>
-      <Heading as="h1" size="xl" mb={5}>
-        Manage Bookings
-      </Heading>
+    <Box p={5} mt={20}>
       <BookingsTable />
     </Box>
   );

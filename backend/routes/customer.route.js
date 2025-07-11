@@ -10,6 +10,7 @@ import {
   registerUser,
   removeBackgroundController,
 } from "../controllers/customer.controller.js";
+import { sendConfirmationEmail } from "../controllers/notification.controller.js";
 import { protectRoute } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js";
 import passport from "passport";
@@ -32,6 +33,7 @@ router.get("/profile", protectRoute, getProfile);
 // Contact and Booking
 router.post("/contact", contact);
 router.post("/booking", booking);
+router.post("/send-confirmation/:id", sendConfirmationEmail);
 
 // Google Auth Routes
 router.get(

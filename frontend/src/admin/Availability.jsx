@@ -20,6 +20,7 @@ import {
   Grid,
   GridItem,
   useColorModeValue,
+  Spinner,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import "../styles/Calendar.css";
@@ -35,6 +36,7 @@ const Availability = () => {
     closeDay,
     openDay,
     loading,
+    error,
   } = useOpeningStore();
   const [selectedDays, setSelectedDays] = useState(openingHours);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -44,13 +46,13 @@ const Availability = () => {
   useEffect(() => {
     fetchOpeningHours();
     fetchClosedDays();
-  }, [fetchOpeningHours]);
+  }, [fetchOpeningHours, fetchClosedDays]); // Added fetchClosedDays to dependencies
 
   useEffect(() => {
     if (openingHours.length > 0 && selectedDays.length === 0) {
       setSelectedDays(openingHours);
     }
-  }, [openingHours]);
+  }, [openingHours, selectedDays]);
 
   useEffect(() => {
     const mergedHours = daysOfWeek.map((day) => {
@@ -78,9 +80,28 @@ const Availability = () => {
     setEditableHours(updatedHours);
   };
 
-  const handleSave = () => {
-    console.log("Sending data:", editableHours);
-    changeOpeningHours(editableHours);
+  const handleSave = async () => {
+    try {
+      await changeOpeningHours(editableHours);
+      toast.success("Opening hours updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update opening hours.");
+    }
+  };
+
+  const handleCalendarClick = async (date) => {
+    const isoDate = formatISO(date, { representation: "date" });
+    try {
+      if (closedDays.includes(isoDate)) {
+        await openDay(isoDate);
+        toast.success(`Opened ${isoDate}`);
+      } else {
+        await closeDay(isoDate);
+        toast.success(`Closed ${isoDate}`);
+      }
+    } catch (error) {
+      toast.error("Failed to update date status.");
+    }
   };
 
   const daysOfWeek = [
@@ -92,15 +113,6 @@ const Availability = () => {
     { name: "Friday", dayOfWeek: 5 },
     { name: "Saturday", dayOfWeek: 6 },
   ];
-
-  const handleCalendarClick = async (date) => {
-    const isoDate = formatISO(date, { representation: "date" });
-    if (closedDays.includes(isoDate)) {
-      await openDay(isoDate);
-    } else {
-      await closeDay(isoDate);
-    }
-  };
 
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.700");
@@ -150,24 +162,33 @@ const Availability = () => {
                 >
                   Business Calendar
                 </Text>
-                <Calendar
-                  value={currentDate}
-                  onChange={setCurrentDate}
-                  onClickDay={handleCalendarClick}
-                  minDate={new Date()}
-                  tileClassName={({ date }) =>
-                    closedDays.includes(
-                      formatISO(date, { representation: "date" })
-                    )
-                      ? "line-through bg-red-50 text-red-500"
-                      : ""
-                  }
-                  tileDisabled={({ date }) =>
-                    closedDays.includes(
-                      formatISO(date, { representation: "date" })
-                    )
-                  }
-                />
+                {loading ? (
+                  <Spinner size="lg" />
+                ) : error ? (
+                  <Text color="red.500">Error: {error}</Text>
+                ) : (
+                  <Calendar
+                    value={currentDate}
+                    onChange={setCurrentDate}
+                    onClickDay={handleCalendarClick}
+                    minDate={new Date()}
+                    tileClassName={({ date }) =>
+                      closedDays.includes(
+                        formatISO(date, { representation: "date" })
+                      )
+                        ? "line-through bg-red-50 text-red-500"
+                        : ""
+                    }
+                    tileDisabled={({ date }) => {
+                      const formatted = formatISO(date, {
+                        representation: "date",
+                      });
+                      const isDisabled = closedDays.includes(formatted);
+                      console.log(`Checking date ${formatted}: ${isDisabled}`);
+                      return isDisabled;
+                    }}
+                  />
+                )}
               </Box>
             </GridItem>
 
@@ -187,34 +208,46 @@ const Availability = () => {
                 >
                   Closed Dates
                 </Text>
-                <VStack spacing={3} align="stretch">
-                  {closedDays.map((date) => (
-                    <Flex
-                      key={date}
-                      justify="space-between"
-                      align="center"
-                      p={3}
-                      _hover={{ bg: closedDateHoverBg }}
-                      rounded="md"
-                    >
-                      <Text fontSize="sm" fontWeight="500" color={subTextColor}>
-                        {new Date(date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </Text>
-                      <IconButton
-                        aria-label="Remove closed date"
-                        icon={<CloseIcon boxSize={3} />}
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => openDay(date)}
-                        colorScheme="red"
-                      />
-                    </Flex>
-                  ))}
-                </VStack>
+                {loading ? (
+                  <Spinner size="lg" />
+                ) : error ? (
+                  <Text color="red.500">Error: {error}</Text>
+                ) : closedDays.length === 0 ? (
+                  <Text color={subTextColor}>No closed dates.</Text>
+                ) : (
+                  <VStack spacing={3} align="stretch">
+                    {closedDays.map((date) => (
+                      <Flex
+                        key={date}
+                        justify="space-between"
+                        align="center"
+                        p={3}
+                        _hover={{ bg: closedDateHoverBg }}
+                        rounded="md"
+                      >
+                        <Text
+                          fontSize="sm"
+                          fontWeight="500"
+                          color={subTextColor}
+                        >
+                          {new Date(date).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </Text>
+                        <IconButton
+                          aria-label="Remove closed date"
+                          icon={<CloseIcon boxSize={3} />}
+                          size="xs"
+                          variant="ghost"
+                          onClick={() => openDay(date)}
+                          colorScheme="red"
+                        />
+                      </Flex>
+                    ))}
+                  </VStack>
+                )}
               </Box>
             </GridItem>
           </>

@@ -141,7 +141,7 @@ const Checkout = () => {
                     borderRadius="md"
                   >
                     <Text fontSize="sm" color={`${selectedPlan.bgColor}.700`}>
-                      💰 ${selectedPlan.price}
+                      💰 £{selectedPlan.price}
                     </Text>
                   </Box>
                 </HStack>

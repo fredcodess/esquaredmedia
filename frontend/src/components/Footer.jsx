@@ -14,7 +14,7 @@ const Footer = ({ bg }) => {
             Contact
           </Text>
           <Box mb={4}>
-            <Text mb={1}>attendai@htmail.com</Text>
+            <Text mb={1}>ee.squaredd@gmail.com</Text>
             <Text>0908934837</Text>
           </Box>
           <Box>
